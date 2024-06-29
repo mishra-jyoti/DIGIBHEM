@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .chatbox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: scroll;
+        }
+        .user-message {
+            text-align: right;
+            margin-bottom: 5px;
+        }
+        .bot-message {
+            text-align: left;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatbot Demo</h1>
+    <div class="chatbox" id="chatbox">
+        <div class="bot-message">Hello! How can I help you today?</div>
+    </div>
+    <form id="user-input">
+        <input type="text" id="user-input-text" placeholder="Enter your message...">
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        document.getElementById('user-input').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var userInput = document.getElementById('user-input-text').value;
+            document.getElementById('chatbox').innerHTML += '<div class="user-message">' + userInput + '</div>';
+            document.getElementById('user-input-text').value = '';
+
+            // Fetch response from chatbot
+            fetch('/get_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('chatbox').innerHTML += '<div class="bot-message">' + data.message + '</div>';
+                // Scroll to bottom of chatbox
+                document.getElementById('chatbox').scrollTop = document.getElementById('chatbox').scrollHeight;
+            });
+        });
+    </script>
+</body>
+</html>
